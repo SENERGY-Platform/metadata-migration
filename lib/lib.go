@@ -17,6 +17,7 @@
 package lib
 
 import (
+	"fmt"
 	"github.com/SENERGY-Platform/metadata-migration/lib/config"
 	"github.com/SENERGY-Platform/metadata-migration/lib/security"
 )
@@ -34,7 +35,15 @@ func New(source config.Config, target config.Config) *Lib {
 }
 
 func (this *Lib) Run(args []string) (err error) {
+	if len(args) == 0 {
+		args = []string{"help"}
+	}
 	cmd, rest, err := Registry.Get(args)
+	if err == CommandNotFoundError {
+		fmt.Println(err)
+		this.Help(nil)
+		return nil
+	}
 	if err != nil {
 		return err
 	}

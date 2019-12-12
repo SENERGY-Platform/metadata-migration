@@ -29,6 +29,18 @@ func ExampleHelp() {
 
 	//output:
 	//ask Ingo Rößner
+	//some commands may accept parameters such as a list of ids
+	//acceptable commands:
+	//      all
+	//      aspects
+	//      characteristics
+	//      concepts
+	//      controlling-functions
+	//      device-classes
+	//      device-types
+	//      help
+	//      measuring-functions
+	//      protocols
 	//<nil>
 }
 
@@ -39,6 +51,18 @@ func ExampleHelpWithIgnoredArgs() {
 
 	//output:
 	//ask Ingo Rößner
+	//some commands may accept parameters such as a list of ids
+	//acceptable commands:
+	//      all
+	//      aspects
+	//      characteristics
+	//      concepts
+	//      controlling-functions
+	//      device-classes
+	//      device-types
+	//      help
+	//      measuring-functions
+	//      protocols
 	//<nil>
 }
 
@@ -48,5 +72,39 @@ func ExampleBadHelp() {
 	fmt.Println(New(config.Config{}, config.Config{}).Run(commandArgs))
 
 	//output:
-	//'bad help' command not found
+	//command not found
+	//ask Ingo Rößner
+	//some commands may accept parameters such as a list of ids
+	//acceptable commands:
+	//      all
+	//      aspects
+	//      characteristics
+	//      concepts
+	//      controlling-functions
+	//      device-classes
+	//      device-types
+	//      help
+	//      measuring-functions
+	//      protocols
+	//<nil>
+}
+
+func ExampleEmpty() {
+	fmt.Println(New(config.Config{}, config.Config{}).Run(nil))
+
+	//output:
+	//ask Ingo Rößner
+	//some commands may accept parameters such as a list of ids
+	//acceptable commands:
+	//      all
+	//      aspects
+	//      characteristics
+	//      concepts
+	//      controlling-functions
+	//      device-classes
+	//      device-types
+	//      help
+	//      measuring-functions
+	//      protocols
+	//<nil>
 }

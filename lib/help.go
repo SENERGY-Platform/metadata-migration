@@ -18,6 +18,7 @@ package lib
 
 import (
 	"fmt"
+	"strings"
 )
 
 func init() {
@@ -26,7 +27,12 @@ func init() {
 	})
 }
 
-func (this *Lib) Help(args []string) error {
+func (this *Lib) Help([]string) error {
 	fmt.Println("ask Ingo Rößner")
+	fmt.Println("some commands may accept parameters such as a list of ids")
+	fmt.Println("acceptable commands:")
+	for _, path := range Registry.GetPaths() {
+		fmt.Println("    ", strings.Join(path, " "))
+	}
 	return nil
 }

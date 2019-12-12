@@ -18,6 +18,7 @@ package lib
 
 import (
 	"errors"
+	"sort"
 	"strings"
 )
 
@@ -48,12 +49,14 @@ func (this *RegistryElement) Register(path []string, cmd Command) {
 	}
 }
 
+var CommandNotFoundError = errors.New("command not found")
+
 func (this *RegistryElement) Get(path []string) (cmd Command, rest []string, err error) {
 	if this.command != nil {
 		return this.command, path, nil
 	}
 	if this.sub == nil {
-		return cmd, path, errors.New("'" + strings.Join(path, " ") + "' command not found")
+		return cmd, path, CommandNotFoundError
 	}
 	if len(path) == 0 {
 		options := []string{}
@@ -66,7 +69,39 @@ func (this *RegistryElement) Get(path []string) (cmd Command, rest []string, err
 	rest = path[1:]
 	reg, ok := this.sub[next]
 	if !ok {
-		return cmd, path, errors.New("'" + strings.Join(path, " ") + "' command not found")
+		return cmd, path, CommandNotFoundError
 	}
 	return reg.Get(rest)
+}
+
+func (this *RegistryElement) GetChild(path []string) (result *RegistryElement, err error) {
+	if len(path) == 0 {
+		return this, nil
+	}
+	sub, ok := this.sub[path[0]]
+	if !ok {
+		return result, errors.New("not found")
+	}
+	return sub.GetChild(path[1:])
+}
+
+func (this *RegistryElement) GetPaths() [][]string {
+	paths := this.getPaths([]string{})
+	sort.Slice(paths, func(i, j int) bool {
+		a := strings.Join(paths[i], " ")
+		b := strings.Join(paths[j], " ")
+		return a < b
+	})
+	return paths
+}
+
+func (this *RegistryElement) getPaths(current []string) (result [][]string) {
+	if this.command != nil {
+		return [][]string{current}
+	}
+	for key, sub := range this.sub {
+		next := append(current, key)
+		result = append(result, sub.getPaths(next)...)
+	}
+	return result
 }
