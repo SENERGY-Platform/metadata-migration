@@ -28,7 +28,7 @@ import (
 )
 
 type Config struct {
-	User              string `json:"user"`
+	SenergyUser       string `json:"senergy_user"`
 	Password          string `json:"password"`
 	AuthClient        string `json:"auth_client"`
 	AuthClientSecret  string `json:"auth_client_secret"`

@@ -25,21 +25,17 @@ import (
 func ExampleHelp() {
 	command := "help"
 	commandArgs := strings.Split(command, " ")
-	fmt.Println(New(config.Config{}, config.Config{}).Run(commandArgs))
+	fmt.Println(New(true, config.Config{}, config.Config{}).Run(commandArgs))
 
 	//output:
 	//ask Ingo Rößner
 	//some commands may accept parameters such as a list of ids
 	//acceptable commands:
 	//      all
-	//      aspects
 	//      characteristics
 	//      concepts
-	//      controlling-functions
-	//      device-classes
 	//      device-types
 	//      help
-	//      measuring-functions
 	//      protocols
 	//<nil>
 }
@@ -47,21 +43,17 @@ func ExampleHelp() {
 func ExampleHelpWithIgnoredArgs() {
 	command := "help something unknown"
 	commandArgs := strings.Split(command, " ")
-	fmt.Println(New(config.Config{}, config.Config{}).Run(commandArgs))
+	fmt.Println(New(true, config.Config{}, config.Config{}).Run(commandArgs))
 
 	//output:
 	//ask Ingo Rößner
 	//some commands may accept parameters such as a list of ids
 	//acceptable commands:
 	//      all
-	//      aspects
 	//      characteristics
 	//      concepts
-	//      controlling-functions
-	//      device-classes
 	//      device-types
 	//      help
-	//      measuring-functions
 	//      protocols
 	//<nil>
 }
@@ -69,7 +61,7 @@ func ExampleHelpWithIgnoredArgs() {
 func ExampleBadHelp() {
 	command := "bad help"
 	commandArgs := strings.Split(command, " ")
-	fmt.Println(New(config.Config{}, config.Config{}).Run(commandArgs))
+	fmt.Println(New(true, config.Config{}, config.Config{}).Run(commandArgs))
 
 	//output:
 	//command not found
@@ -77,34 +69,26 @@ func ExampleBadHelp() {
 	//some commands may accept parameters such as a list of ids
 	//acceptable commands:
 	//      all
-	//      aspects
 	//      characteristics
 	//      concepts
-	//      controlling-functions
-	//      device-classes
 	//      device-types
 	//      help
-	//      measuring-functions
 	//      protocols
 	//<nil>
 }
 
 func ExampleEmpty() {
-	fmt.Println(New(config.Config{}, config.Config{}).Run(nil))
+	fmt.Println(New(true, config.Config{}, config.Config{}).Run(nil))
 
 	//output:
 	//ask Ingo Rößner
 	//some commands may accept parameters such as a list of ids
 	//acceptable commands:
 	//      all
-	//      aspects
 	//      characteristics
 	//      concepts
-	//      controlling-functions
-	//      device-classes
 	//      device-types
 	//      help
-	//      measuring-functions
 	//      protocols
 	//<nil>
 }

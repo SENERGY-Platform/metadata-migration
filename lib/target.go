@@ -32,7 +32,7 @@ func setResource(token string, endpoint string, id string, element interface{}) 
 		debug.PrintStack()
 		return err, http.StatusInternalServerError
 	}
-	req, err := http.NewRequest("PUT", endpoint+"/"+url.PathEscape(id), nil)
+	req, err := http.NewRequest("PUT", endpoint+"/"+url.PathEscape(id), b)
 	if err != nil {
 		debug.PrintStack()
 		return err, http.StatusInternalServerError

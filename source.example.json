@@ -1,0 +1,10 @@
+{
+   "senergy_user":"",
+   "password":"",
+   "auth_client":"",
+   "auth_client_secret":"",
+   "auth_url":"",
+   "device_manager_url":"",
+   "source_list_url":"",
+   "source_semantic_url":""
+}

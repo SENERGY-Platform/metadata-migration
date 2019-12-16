@@ -26,6 +26,7 @@ import (
 func main() {
 	sourceLocation := flag.String("source", "source.json", "source configuration file")
 	targetLocation := flag.String("target", "target.json", "target configuration file")
+	quiet := flag.Bool("quiet", false, "quiet log")
 	flag.Parse()
 
 	source, err := config.Load(*sourceLocation)
@@ -38,7 +39,7 @@ func main() {
 		log.Fatal("ERROR: unable to load target config", err)
 	}
 
-	err = lib.New(source, target).Run(flag.Args())
+	err = lib.New(!*quiet, source, target).Run(flag.Args())
 	if err != nil {
 		log.Fatal("ERROR: ", err)
 	}

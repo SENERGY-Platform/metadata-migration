@@ -25,12 +25,14 @@ import (
 type Lib struct {
 	sourceConfig config.Config
 	targetConfig config.Config
+	verbose      bool
 }
 
-func New(source config.Config, target config.Config) *Lib {
+func New(verbose bool, source config.Config, target config.Config) *Lib {
 	return &Lib{
 		sourceConfig: source,
 		targetConfig: target,
+		verbose:      verbose,
 	}
 }
 
@@ -50,12 +52,13 @@ func (this *Lib) Run(args []string) (err error) {
 	return cmd(this, rest)
 }
 
-func (this *Lib) Migrate(semanticSource bool, semanticList bool, listResource string, resource string, ids []string) error {
+func (this *Lib) Migrate(semanticSource bool, listResource string, resource string, ids []string) error {
+	this.VerboseLog("start to migrate", resource)
 	sourceToken, err := security.GetOpenidPasswordToken(
 		this.sourceConfig.AuthUrl,
 		this.sourceConfig.AuthClient,
 		this.sourceConfig.AuthClientSecret,
-		this.sourceConfig.User,
+		this.sourceConfig.SenergyUser,
 		this.sourceConfig.Password)
 
 	if err != nil {
@@ -66,7 +69,7 @@ func (this *Lib) Migrate(semanticSource bool, semanticList bool, listResource st
 		this.targetConfig.AuthUrl,
 		this.targetConfig.AuthClient,
 		this.targetConfig.AuthClientSecret,
-		this.targetConfig.User,
+		this.targetConfig.SenergyUser,
 		this.targetConfig.Password)
 
 	if err != nil {
@@ -81,14 +84,11 @@ func (this *Lib) Migrate(semanticSource bool, semanticList bool, listResource st
 		}
 		close(idChannel)
 	} else {
-		if semanticList {
-			idChannel = listSemanticResourceIds(sourceToken.JwtToken(), this.sourceConfig.SourceSemanticUrl, resource)
-		} else {
-			idChannel = listResourceIds(sourceToken.JwtToken(), this.sourceConfig.SourceListUrl, listResource)
-		}
+		idChannel = listResourceIds(sourceToken.JwtToken(), this.sourceConfig.SourceListUrl, listResource)
 	}
 
 	for id := range idChannel {
+		this.VerboseLog(id)
 		var temp interface{}
 		if semanticSource {
 			err, _ = getResource(sourceToken.JwtToken(), this.sourceConfig.SourceSemanticUrl+"/"+resource, id, &temp)
@@ -98,10 +98,18 @@ func (this *Lib) Migrate(semanticSource bool, semanticList bool, listResource st
 		if err != nil {
 			return err
 		}
-		err, _ = setResource(targetToken.JwtToken(), this.targetConfig.DeviceManagerUrl+"/"+resource, id, temp)
+		err, code := setResource(targetToken.JwtToken(), this.targetConfig.DeviceManagerUrl+"/"+resource, id, temp)
 		if err != nil {
+			this.VerboseLog(code, err)
 			return err
 		}
 	}
+	this.VerboseLog("finished to migrate", resource)
 	return nil
+}
+
+func (this *Lib) VerboseLog(msg ...interface{}) {
+	if this.verbose {
+		fmt.Println(msg...)
+	}
 }

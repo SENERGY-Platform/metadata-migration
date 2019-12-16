@@ -93,7 +93,7 @@ func listResourceIds(token string, endpoint string, resource string) (ids chan s
 				debug.PrintStack()
 				return
 			}
-			err = json.NewDecoder(resp.Body).Decode(temp)
+			err = json.NewDecoder(resp.Body).Decode(&temp)
 			if err != nil {
 				log.Println("ERROR:", err)
 				debug.PrintStack()
@@ -103,46 +103,6 @@ func listResourceIds(token string, endpoint string, resource string) (ids chan s
 			for _, id := range temp {
 				ids <- id.Id
 			}
-		}
-	}()
-	return ids
-}
-
-func listSemanticResourceIds(token string, endpoint string, resource string) (ids chan string) {
-	ids = make(chan string, BATCH_SIZE)
-	go func() {
-		defer close(ids)
-		temp := []IdWrapper{}
-		req, err := http.NewRequest("GET", endpoint+"/"+resource, nil)
-		if err != nil {
-			log.Println("ERROR:", err)
-			debug.PrintStack()
-			return
-		}
-		req.Header.Set("Authorization", token)
-		resp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			log.Println("ERROR:", err)
-			debug.PrintStack()
-			return
-		}
-		defer resp.Body.Close()
-		if resp.StatusCode >= 300 {
-			buf := new(bytes.Buffer)
-			buf.ReadFrom(resp.Body)
-			err = errors.New(buf.String())
-			log.Println("ERROR: unable to get resource", endpoint, err)
-			debug.PrintStack()
-			return
-		}
-		err = json.NewDecoder(resp.Body).Decode(temp)
-		if err != nil {
-			log.Println("ERROR:", err)
-			debug.PrintStack()
-			return
-		}
-		for _, id := range temp {
-			ids <- id.Id
 		}
 	}()
 	return ids

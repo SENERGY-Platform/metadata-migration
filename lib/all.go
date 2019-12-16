@@ -16,6 +16,8 @@
 
 package lib
 
+import "time"
+
 func init() {
 	Registry.Register([]string{"all"}, func(library *Lib, args []string) error {
 		return library.All(args)
@@ -23,34 +25,24 @@ func init() {
 }
 
 func (this *Lib) All([]string) (err error) {
-	err = this.Protocols([]string{})
-	if err != nil {
-		return err
-	}
 	err = this.Concepts([]string{})
 	if err != nil {
 		return err
 	}
+	this.VerboseLog("wait 10s for cqrs")
+	time.Sleep(10 * time.Second)
 	err = this.Characteristics([]string{})
 	if err != nil {
 		return err
 	}
-	err = this.ControllingFunctions([]string{})
+	this.VerboseLog("wait 10s for cqrs")
+	time.Sleep(10 * time.Second)
+	err = this.Protocols([]string{})
 	if err != nil {
 		return err
 	}
-	err = this.MeasuringFunctions([]string{})
-	if err != nil {
-		return err
-	}
-	err = this.Aspects([]string{})
-	if err != nil {
-		return err
-	}
-	err = this.DeviceClasses([]string{})
-	if err != nil {
-		return err
-	}
+	this.VerboseLog("wait 10s for cqrs")
+	time.Sleep(10 * time.Second)
 	err = this.DeviceTypes([]string{})
 	if err != nil {
 		return err

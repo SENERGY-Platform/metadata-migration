@@ -16,6 +16,18 @@
 
 package lib
 
+import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"github.com/SENERGY-Platform/metadata-migration/lib/security"
+	"log"
+	"net/http"
+	"net/url"
+	"runtime/debug"
+	"strconv"
+)
+
 func init() {
 	Registry.Register([]string{"characteristics"}, func(library *Lib, args []string) error {
 		return library.Characteristics(args)
@@ -23,5 +35,95 @@ func init() {
 }
 
 func (this *Lib) Characteristics(ids []string) error {
-	return this.Migrate(true, false, "characteristics", "characteristics", ids)
+	this.VerboseLog("start to migrate characteristics")
+	sourceToken, err := security.GetOpenidPasswordToken(
+		this.sourceConfig.AuthUrl,
+		this.sourceConfig.AuthClient,
+		this.sourceConfig.AuthClientSecret,
+		this.sourceConfig.SenergyUser,
+		this.sourceConfig.Password)
+
+	if err != nil {
+		return err
+	}
+
+	targetToken, err := security.GetOpenidPasswordToken(
+		this.targetConfig.AuthUrl,
+		this.targetConfig.AuthClient,
+		this.targetConfig.AuthClientSecret,
+		this.targetConfig.SenergyUser,
+		this.targetConfig.Password)
+
+	if err != nil {
+		return err
+	}
+
+	idChannel := listChracteristicIds(sourceToken.JwtToken(), this.sourceConfig.SourceListUrl)
+
+	for id := range idChannel {
+		this.VerboseLog(id)
+		var temp interface{}
+		err, _ = getResource(sourceToken.JwtToken(), this.sourceConfig.SourceSemanticUrl+"/characteristics", id.Characteristic, &temp)
+		if err != nil {
+			return err
+		}
+		err, code := setResource(targetToken.JwtToken(), this.targetConfig.DeviceManagerUrl+"/concepts/"+url.PathEscape(id.Concept)+"/characteristics", id.Characteristic, temp)
+		if err != nil {
+			this.VerboseLog(code, err)
+			return err
+		}
+	}
+	this.VerboseLog("finished to migrate characteristics")
+	return nil
+}
+
+type CharacteristicId struct {
+	Characteristic string `json:"id"`
+	Concept        string `json:"concept_id"`
+}
+
+func listChracteristicIds(token string, endpoint string) (ids chan CharacteristicId) {
+	ids = make(chan CharacteristicId, BATCH_SIZE)
+	go func() {
+		defer close(ids)
+		limit := BATCH_SIZE
+		offset := 0
+		temp := []CharacteristicId{}
+		for len(temp) == limit || offset == 0 {
+			temp := []CharacteristicId{}
+			req, err := http.NewRequest("GET", endpoint+"/jwt/list/characteristics/r/"+strconv.Itoa(limit)+"/"+strconv.Itoa(offset)+"/name/asc", nil)
+			if err != nil {
+				log.Println("ERROR:", err)
+				debug.PrintStack()
+				return
+			}
+			req.Header.Set("Authorization", token)
+			resp, err := http.DefaultClient.Do(req)
+			if err != nil {
+				log.Println("ERROR:", err)
+				debug.PrintStack()
+				return
+			}
+			defer resp.Body.Close()
+			if resp.StatusCode >= 300 {
+				buf := new(bytes.Buffer)
+				buf.ReadFrom(resp.Body)
+				err = errors.New(buf.String())
+				log.Println("ERROR: unable to get resource", endpoint, err)
+				debug.PrintStack()
+				return
+			}
+			err = json.NewDecoder(resp.Body).Decode(&temp)
+			if err != nil {
+				log.Println("ERROR:", err)
+				debug.PrintStack()
+				return
+			}
+			offset = offset + limit
+			for _, id := range temp {
+				ids <- id
+			}
+		}
+	}()
+	return ids
 }

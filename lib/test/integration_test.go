@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package lib
+package test
 
-func init() {
-	Registry.Register([]string{"aspects"}, func(library *Lib, args []string) error {
-		return library.Aspects(args)
-	})
-}
+import (
+	"testing"
+)
 
-func (this *Lib) Aspects(ids []string) error {
-	return this.Migrate(true, true, "aspects", "aspects", ids)
+func CheckMigration(t *testing.T) {
+
 }
