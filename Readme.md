@@ -34,3 +34,30 @@ acceptable commands:
 ```
 ./metadata-migration device-types id1 id2 id3
 ```
+
+## Config Fields
+
+| Field               | Description                  |
+|---------------------|------------------------------|
+| senergy_user        | user name from keycloak      |
+| password            | password from keycloak       |
+| auth_client         | keycloak auth client         |
+| auth_client_secret  | keycloak autch client secret |
+| auth_url            | url to keycloak              |
+| device_manager_url  | url to device-manager        |
+| source_list_url     | url to permission-search     |
+| source_semantic_url | url to semantic-repository   |
+
+**JSON:**
+```
+{
+  "senergy_user":"user",
+  "password":"password",
+  "auth_client":"keycloak auth client",
+  "auth_client_secret":"keycloak autch client secret",
+  "auth_url":"url to keycloak",
+  "device_manager_url":"url to device-manager",
+  "source_list_url":"url to permission-search",
+  "source_semantic_url":"url to semantic-repository"
+}
+```
