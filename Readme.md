@@ -35,6 +35,12 @@ acceptable commands:
 ./metadata-migration device-types id1 id2 id3
 ```
 
+### Export all
+only source.json is needed. target.json wil be ignored.
+```
+./metadata-migration -export=testexport.json all
+```
+
 ## Config Fields
 
 | Field               | Description                  |
