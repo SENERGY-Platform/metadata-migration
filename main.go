@@ -17,15 +17,19 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"github.com/SENERGY-Platform/metadata-migration/lib"
 	"github.com/SENERGY-Platform/metadata-migration/lib/config"
+	"github.com/SENERGY-Platform/metadata-migration/lib/export"
 	"log"
+	"sync"
 )
 
 func main() {
 	sourceLocation := flag.String("source", "source.json", "source configuration file")
 	targetLocation := flag.String("target", "target.json", "target configuration file")
+	exportTarget := flag.String("export", "", "if set the target will be ignored and the metadata will be exported to the given file")
 	quiet := flag.Bool("quiet", false, "quiet log")
 	flag.Parse()
 
@@ -34,9 +38,21 @@ func main() {
 		log.Fatal("ERROR: unable to load source config", err)
 	}
 
-	target, err := config.Load(*targetLocation)
-	if err != nil {
-		log.Fatal("ERROR: unable to load target config", err)
+	var target config.Config
+	if exportTarget != nil && *exportTarget != "" {
+		wg := sync.WaitGroup{}
+		defer wg.Wait()
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		target, err = export.Target(*exportTarget, ctx, &wg)
+		if err != nil {
+			log.Fatal("ERROR: unable to start export target", err)
+		}
+	} else {
+		target, err = config.Load(*targetLocation)
+		if err != nil {
+			log.Fatal("ERROR: unable to load target config", err)
+		}
 	}
 
 	err = lib.New(!*quiet, source, target).Run(flag.Args())
