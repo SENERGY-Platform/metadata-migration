@@ -25,7 +25,7 @@ import (
 func ExampleHelp() {
 	command := "help"
 	commandArgs := strings.Split(command, " ")
-	fmt.Println(New(true, config.Config{}, config.Config{}).Run(commandArgs))
+	fmt.Println(New(true, config.Config{}, config.Config{}, nil).Run(commandArgs))
 
 	//output:
 	//ask Ingo Rößner
@@ -43,7 +43,7 @@ func ExampleHelp() {
 func ExampleHelpWithIgnoredArgs() {
 	command := "help something unknown"
 	commandArgs := strings.Split(command, " ")
-	fmt.Println(New(true, config.Config{}, config.Config{}).Run(commandArgs))
+	fmt.Println(New(true, config.Config{}, config.Config{}, nil).Run(commandArgs))
 
 	//output:
 	//ask Ingo Rößner
@@ -61,7 +61,7 @@ func ExampleHelpWithIgnoredArgs() {
 func ExampleBadHelp() {
 	command := "bad help"
 	commandArgs := strings.Split(command, " ")
-	fmt.Println(New(true, config.Config{}, config.Config{}).Run(commandArgs))
+	fmt.Println(New(true, config.Config{}, config.Config{}, nil).Run(commandArgs))
 
 	//output:
 	//command not found
@@ -78,7 +78,7 @@ func ExampleBadHelp() {
 }
 
 func ExampleEmpty() {
-	fmt.Println(New(true, config.Config{}, config.Config{}).Run(nil))
+	fmt.Println(New(true, config.Config{}, config.Config{}, nil).Run(nil))
 
 	//output:
 	//ask Ingo Rößner

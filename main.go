@@ -22,6 +22,7 @@ import (
 	"github.com/SENERGY-Platform/metadata-migration/lib"
 	"github.com/SENERGY-Platform/metadata-migration/lib/config"
 	"github.com/SENERGY-Platform/metadata-migration/lib/export"
+	"github.com/SENERGY-Platform/metadata-migration/lib/transformer"
 	"log"
 	"sync"
 )
@@ -31,6 +32,7 @@ func main() {
 	targetLocation := flag.String("target", "target.json", "target configuration file")
 	exportTarget := flag.String("export", "", "if set the target will be ignored and the metadata will be exported to the given file")
 	quiet := flag.Bool("quiet", false, "quiet log")
+	transformernames := flag.String("transformer", "", "list of transformer names separated by ','")
 	flag.Parse()
 
 	source, err := config.Load(*sourceLocation)
@@ -55,7 +57,12 @@ func main() {
 		}
 	}
 
-	err = lib.New(!*quiet, source, target).Run(flag.Args())
+	transformerList, err := transformer.Use(*transformernames)
+	if err != nil {
+		log.Fatal("ERROR: ", err)
+	}
+
+	err = lib.New(!*quiet, source, target, transformerList).Run(flag.Args())
 	if err != nil {
 		log.Fatal("ERROR: ", err)
 	}

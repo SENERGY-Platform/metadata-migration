@@ -20,19 +20,22 @@ import (
 	"fmt"
 	"github.com/SENERGY-Platform/metadata-migration/lib/config"
 	"github.com/SENERGY-Platform/metadata-migration/lib/security"
+	"github.com/SENERGY-Platform/metadata-migration/lib/transformer"
 )
 
 type Lib struct {
 	sourceConfig config.Config
 	targetConfig config.Config
 	verbose      bool
+	transformer  transformer.TransformerList
 }
 
-func New(verbose bool, source config.Config, target config.Config) *Lib {
+func New(verbose bool, source config.Config, target config.Config, transformer transformer.TransformerList) *Lib {
 	return &Lib{
 		sourceConfig: source,
 		targetConfig: target,
 		verbose:      verbose,
+		transformer:  transformer,
 	}
 }
 
@@ -98,7 +101,11 @@ func (this *Lib) Migrate(semanticSource bool, listResource string, resource stri
 		if err != nil {
 			return err
 		}
-		err, code := setResource(targetToken.JwtToken(), this.targetConfig.DeviceManagerUrl+"/"+resource, id, temp)
+		transformed, err := this.transformer.Apply(this.sourceConfig, sourceToken.JwtToken(), resource, temp)
+		if err != nil {
+			return err
+		}
+		err, code := setResource(targetToken.JwtToken(), this.targetConfig.DeviceManagerUrl+"/"+resource, id, transformed)
 		if err != nil {
 			this.VerboseLog(code, err)
 			return err

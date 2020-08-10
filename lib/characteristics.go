@@ -67,7 +67,11 @@ func (this *Lib) Characteristics(ids []string) error {
 		if err != nil {
 			return err
 		}
-		err, code := setResource(targetToken.JwtToken(), this.targetConfig.DeviceManagerUrl+"/concepts/"+url.PathEscape(id.Concept)+"/characteristics", id.Characteristic, temp)
+		transformed, err := this.transformer.Apply(this.sourceConfig, sourceToken.JwtToken(), "characteristics", temp)
+		if err != nil {
+			return err
+		}
+		err, code := setResource(targetToken.JwtToken(), this.targetConfig.DeviceManagerUrl+"/concepts/"+url.PathEscape(id.Concept)+"/characteristics", id.Characteristic, transformed)
 		if err != nil {
 			this.VerboseLog(code, err)
 			return err

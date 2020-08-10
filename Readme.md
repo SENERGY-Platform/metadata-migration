@@ -41,6 +41,12 @@ only source.json is needed. target.json wil be ignored.
 ./metadata-migration -export=testexport.json all
 ```
 
+## Transformer
+use transformations before writing to target
+```
+./metadata-migration -transformer=addserviceinteraction -export=testexport.json all
+```
+
 ## Config Fields
 
 | Field               | Description                  |
