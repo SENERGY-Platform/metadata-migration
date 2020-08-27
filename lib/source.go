@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -46,7 +47,7 @@ func getResource(token string, endpoint string, id string, result interface{}) (
 		buf := new(bytes.Buffer)
 		buf.ReadFrom(resp.Body)
 		err = errors.New(buf.String())
-		log.Println("ERROR: unable to get resource", endpoint, err)
+		log.Println("ERROR: unable to get resource", endpoint, id, err)
 		debug.PrintStack()
 		return err, resp.StatusCode
 	}
@@ -58,11 +59,42 @@ func getResource(token string, endpoint string, id string, result interface{}) (
 	return nil, http.StatusOK
 }
 
+type IdProducer func(token string) (ids chan string)
+
+func rawIdsProducer(ids []string) IdProducer {
+	return func(token string) (result chan string) {
+		idChannel := make(chan string, len(ids))
+		for _, id := range ids {
+			idChannel <- id
+		}
+		close(idChannel)
+		return idChannel
+	}
+}
+
+func permSearchIdsProducer(endpoint string, resource string) IdProducer {
+	return func(token string) (ids chan string) {
+		return listResourceIdsFromPermSearch(token, endpoint, resource)
+	}
+}
+
 type IdWrapper struct {
 	Id string `json:"id"`
 }
 
-func listResourceIds(token string, endpoint string, resource string) (ids chan string) {
+func listResourceIdsFromPermSearch(token string, endpoint string, resource string) (ids chan string) {
+	return listResourceIds(token, endpoint, func(limit int, offset int) string {
+		return "/jwt/list/" + resource + "/r/" + strconv.Itoa(limit) + "/" + strconv.Itoa(offset) + "/name/asc"
+	}, func(reader io.Reader) (result []IdWrapper, err error) {
+		err = json.NewDecoder(reader).Decode(&result)
+		return
+	})
+}
+
+type PathProducer func(limit int, offset int) string
+type IdListParser func(reader io.Reader) ([]IdWrapper, error)
+
+func listResourceIds(token string, endpoint string, pathProducer PathProducer, listParser IdListParser) (ids chan string) {
 	ids = make(chan string, BATCH_SIZE)
 	go func() {
 		defer close(ids)
@@ -70,38 +102,41 @@ func listResourceIds(token string, endpoint string, resource string) (ids chan s
 		offset := 0
 		temp := []IdWrapper{}
 		for len(temp) == limit || offset == 0 {
-			temp := []IdWrapper{}
-			req, err := http.NewRequest("GET", endpoint+"/jwt/list/"+resource+"/r/"+strconv.Itoa(limit)+"/"+strconv.Itoa(offset)+"/name/asc", nil)
-			if err != nil {
-				log.Println("ERROR:", err)
-				debug.PrintStack()
-				return
-			}
-			req.Header.Set("Authorization", token)
-			resp, err := http.DefaultClient.Do(req)
-			if err != nil {
-				log.Println("ERROR:", err)
-				debug.PrintStack()
-				return
-			}
-			defer resp.Body.Close()
-			if resp.StatusCode >= 300 {
-				buf := new(bytes.Buffer)
-				buf.ReadFrom(resp.Body)
-				err = errors.New(buf.String())
-				log.Println("ERROR: unable to get resource", endpoint, err)
-				debug.PrintStack()
-				return
-			}
-			err = json.NewDecoder(resp.Body).Decode(&temp)
-			if err != nil {
-				log.Println("ERROR:", err)
-				debug.PrintStack()
-				return
-			}
-			offset = offset + limit
-			for _, id := range temp {
-				ids <- id.Id
+			temp = []IdWrapper{}
+			path := pathProducer(limit, offset)
+			if path != "" {
+				req, err := http.NewRequest("GET", endpoint+path, nil)
+				if err != nil {
+					log.Println("ERROR:", err)
+					debug.PrintStack()
+					return
+				}
+				req.Header.Set("Authorization", token)
+				resp, err := http.DefaultClient.Do(req)
+				if err != nil {
+					log.Println("ERROR:", err)
+					debug.PrintStack()
+					return
+				}
+				defer resp.Body.Close()
+				if resp.StatusCode >= 300 {
+					buf := new(bytes.Buffer)
+					buf.ReadFrom(resp.Body)
+					err = errors.New(buf.String())
+					log.Println("ERROR: unable to get resource ids", endpoint, err)
+					debug.PrintStack()
+					return
+				}
+				temp, err = listParser(resp.Body)
+				if err != nil {
+					log.Println("ERROR:", err)
+					debug.PrintStack()
+					return
+				}
+				offset = offset + limit
+				for _, id := range temp {
+					ids <- id.Id
+				}
 			}
 		}
 	}()

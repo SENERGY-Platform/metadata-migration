@@ -37,6 +37,24 @@ func (this *Lib) All([]string) (err error) {
 	}
 	this.VerboseLog("wait 10s for cqrs")
 	time.Sleep(10 * time.Second)
+	err = this.Functions([]string{})
+	if err != nil {
+		return err
+	}
+	this.VerboseLog("wait 10s for cqrs")
+	time.Sleep(10 * time.Second)
+	err = this.Aspects([]string{})
+	if err != nil {
+		return err
+	}
+	this.VerboseLog("wait 10s for cqrs")
+	time.Sleep(10 * time.Second)
+	err = this.DeviceClasses([]string{})
+	if err != nil {
+		return err
+	}
+	this.VerboseLog("wait 10s for cqrs")
+	time.Sleep(10 * time.Second)
 	err = this.Protocols([]string{})
 	if err != nil {
 		return err

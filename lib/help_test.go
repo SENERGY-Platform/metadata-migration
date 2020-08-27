@@ -32,9 +32,12 @@ func ExampleHelp() {
 	//some commands may accept parameters such as a list of ids
 	//acceptable commands:
 	//      all
+	//      aspects
 	//      characteristics
 	//      concepts
+	//      device-classes
 	//      device-types
+	//      functions
 	//      help
 	//      protocols
 	//<nil>
@@ -50,9 +53,12 @@ func ExampleHelpWithIgnoredArgs() {
 	//some commands may accept parameters such as a list of ids
 	//acceptable commands:
 	//      all
+	//      aspects
 	//      characteristics
 	//      concepts
+	//      device-classes
 	//      device-types
+	//      functions
 	//      help
 	//      protocols
 	//<nil>
@@ -69,9 +75,12 @@ func ExampleBadHelp() {
 	//some commands may accept parameters such as a list of ids
 	//acceptable commands:
 	//      all
+	//      aspects
 	//      characteristics
 	//      concepts
+	//      device-classes
 	//      device-types
+	//      functions
 	//      help
 	//      protocols
 	//<nil>
@@ -85,9 +94,12 @@ func ExampleEmpty() {
 	//some commands may accept parameters such as a list of ids
 	//acceptable commands:
 	//      all
+	//      aspects
 	//      characteristics
 	//      concepts
+	//      device-classes
 	//      device-types
+	//      functions
 	//      help
 	//      protocols
 	//<nil>

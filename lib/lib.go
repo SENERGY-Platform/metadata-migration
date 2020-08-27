@@ -56,6 +56,26 @@ func (this *Lib) Run(args []string) (err error) {
 }
 
 func (this *Lib) Migrate(semanticSource bool, listResource string, resource string, ids []string) error {
+	var idProducer IdProducer
+	if len(ids) > 0 {
+		idProducer = rawIdsProducer(ids)
+	} else {
+		idProducer = permSearchIdsProducer(this.sourceConfig.SourceListUrl, listResource)
+	}
+
+	sourceUrl := this.sourceConfig.DeviceManagerUrl
+	if semanticSource {
+		sourceUrl = this.sourceConfig.SourceSemanticUrl
+	}
+
+	return this.MigrateWithIdsProducer(
+		sourceUrl,
+		this.targetConfig.DeviceManagerUrl,
+		resource,
+		idProducer)
+}
+
+func (this *Lib) MigrateWithIdsProducer(sourceUrl string, targetUrl string, resource string, idProducer IdProducer) error {
 	this.VerboseLog("start to migrate", resource)
 	sourceToken, err := security.GetOpenidPasswordToken(
 		this.sourceConfig.AuthUrl,
@@ -79,25 +99,12 @@ func (this *Lib) Migrate(semanticSource bool, listResource string, resource stri
 		return err
 	}
 
-	var idChannel chan string
-	if len(ids) > 0 {
-		idChannel = make(chan string, len(ids))
-		for _, id := range ids {
-			idChannel <- id
-		}
-		close(idChannel)
-	} else {
-		idChannel = listResourceIds(sourceToken.JwtToken(), this.sourceConfig.SourceListUrl, listResource)
-	}
+	idChannel := idProducer(sourceToken.JwtToken())
 
 	for id := range idChannel {
 		this.VerboseLog(id)
 		var temp interface{}
-		if semanticSource {
-			err, _ = getResource(sourceToken.JwtToken(), this.sourceConfig.SourceSemanticUrl+"/"+resource, id, &temp)
-		} else {
-			err, _ = getResource(sourceToken.JwtToken(), this.sourceConfig.DeviceManagerUrl+"/"+resource, id, &temp)
-		}
+		err, _ = getResource(sourceToken.JwtToken(), sourceUrl+"/"+resource, id, &temp)
 		if err != nil {
 			return err
 		}
@@ -105,7 +112,7 @@ func (this *Lib) Migrate(semanticSource bool, listResource string, resource stri
 		if err != nil {
 			return err
 		}
-		err, code := setResource(targetToken.JwtToken(), this.targetConfig.DeviceManagerUrl+"/"+resource, id, transformed)
+		err, code := setResource(targetToken.JwtToken(), targetUrl+"/"+resource, id, transformed)
 		if err != nil {
 			this.VerboseLog(code, err)
 			return err
