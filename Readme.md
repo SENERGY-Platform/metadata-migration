@@ -41,6 +41,39 @@ only source.json is needed. target.json wil be ignored.
 ./metadata-migration -export=testexport.json all
 ```
 
+### Import
+
+**simple import call:**
+```
+./metadata-migration import import_file.json
+```
+
+**export may be used:**
+```
+./metadata-migration -export=export_file.json import import_file.json
+```
+
+**import file may be online location:**
+```
+./metadata-migration import https://raw.githubusercontent.com/SENERGY-Platform/metadata-export/master/export.json
+```
+
+
+**only protocols:**
+
+_the parameters after the import file location may be used to select resources from the file. each resource which path contains any of the given additional parameters will be send._
+```
+./metadata-migration import import_file.json protocols
+```
+
+
+**only 2 protocols by id:**
+_the parameters after the import file location may be used to select resources from the file. each resource which path contains any of the given additional parameters will be send._
+
+```
+./metadata-migration import import_file.json urn:infai:ses:protocol:3b59ea31-da98-45fd-a354-1b9bd06b837e urn:infai:ses:protocol:c9a06d44-0cd0-465b-b0d9-560d604057a2
+```
+
 ## Transformer
 use transformations before writing to target
 ```

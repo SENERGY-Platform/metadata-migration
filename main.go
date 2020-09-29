@@ -35,11 +35,14 @@ func main() {
 	transformernames := flag.String("transformer", "", "list of transformer names separated by ','")
 	flag.Parse()
 
-	source, err := config.Load(*sourceLocation)
-	if err != nil {
-		log.Fatal("ERROR: unable to load source config", err)
+	var source config.Config
+	var err error
+	if len(flag.Args()) > 0 && flag.Args()[0] != "import" {
+		source, err = config.Load(*sourceLocation)
+		if err != nil {
+			log.Fatal("ERROR: unable to load source config", err)
+		}
 	}
-
 	var target config.Config
 	if exportTarget != nil && *exportTarget != "" {
 		wg := sync.WaitGroup{}
