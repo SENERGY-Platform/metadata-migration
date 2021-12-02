@@ -22,6 +22,29 @@ func init() {
 	Registry.Register([]string{"all"}, func(library *Lib, args []string) error {
 		return library.All(args)
 	})
+	Registry.Register([]string{"all-with-devices"}, func(library *Lib, args []string) error {
+		return library.AllWithDevices(args)
+	})
+}
+
+func (this *Lib) AllWithDevices([]string) (err error) {
+	err = this.All([]string{})
+	if err != nil {
+		return err
+	}
+	this.VerboseLog("wait 10s for cqrs")
+	time.Sleep(10 * time.Second)
+	err = this.Devices([]string{})
+	if err != nil {
+		return err
+	}
+	this.VerboseLog("wait 10s for cqrs")
+	time.Sleep(10 * time.Second)
+	err = this.DeviceGroups([]string{})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (this *Lib) All([]string) (err error) {
