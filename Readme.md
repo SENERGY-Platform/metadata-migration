@@ -25,6 +25,13 @@ acceptable commands:
 ./metadata-migration all
 ```
 
+### Migrate with Devices and Device-Groups
+```
+#for device-groups the user needs to have the 'system' role to see every element
+./metadata-migration all-with-devices
+```
+
+
 ### Migrate all Device-Types
 ```
 ./metadata-migration device-types
