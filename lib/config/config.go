@@ -36,6 +36,7 @@ type Config struct {
 	DeviceManagerUrl  string `json:"device_manager_url"`
 	SourceListUrl     string `json:"source_list_url"`
 	SourceSemanticUrl string `json:"source_semantic_url"`
+	ProcessModelUrl   string `json:"process_model_url"`
 }
 
 //loads config from json in location and used environment variables (e.g ZookeeperUrl --> ZOOKEEPER_URL)

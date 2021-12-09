@@ -6,5 +6,6 @@
    "auth_url":"",
    "device_manager_url":"",
    "source_list_url":"",
-   "source_semantic_url":""
+   "source_semantic_url":"",
+   "process_model_url": ""
 }

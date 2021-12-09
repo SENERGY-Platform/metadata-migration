@@ -35,6 +35,15 @@ func main() {
 	transformernames := flag.String("transformer", "", "list of transformer names separated by ','")
 	flag.Parse()
 
+	args := flag.Args()
+	if len(args) == 1 && args[0] == "help" {
+		err := lib.New(!*quiet, config.Config{}, config.Config{}, nil).Run(args)
+		if err != nil {
+			log.Fatal("ERROR: ", err)
+		}
+		return
+	}
+
 	var source config.Config
 	var err error
 	if len(flag.Args()) > 0 && flag.Args()[0] != "import" {
@@ -65,7 +74,7 @@ func main() {
 		log.Fatal("ERROR: ", err)
 	}
 
-	err = lib.New(!*quiet, source, target, transformerList).Run(flag.Args())
+	err = lib.New(!*quiet, source, target, transformerList).Run(args)
 	if err != nil {
 		log.Fatal("ERROR: ", err)
 	}

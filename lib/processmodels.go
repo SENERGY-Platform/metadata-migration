@@ -17,11 +17,11 @@
 package lib
 
 func init() {
-	Registry.Register([]string{"device-types"}, func(library *Lib, args []string) error {
-		return library.DeviceTypes(args)
+	Registry.Register([]string{"process-models"}, func(library *Lib, args []string) error {
+		return library.ProcessModels(args)
 	})
 }
 
-func (this *Lib) DeviceTypes(ids []string) error {
-	return this.MigrateDeviceManager(false, "device-types", "device-types", ids)
+func (this *Lib) ProcessModels(ids []string) error {
+	return this.MigrateFromSourceToTarget(this.sourceConfig.ProcessModelUrl, this.targetConfig.ProcessModelUrl, "processmodel", "processes", ids)
 }

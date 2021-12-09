@@ -55,7 +55,21 @@ func (this *Lib) Run(args []string) (err error) {
 	return cmd(this, rest)
 }
 
-func (this *Lib) Migrate(semanticSource bool, listResource string, resource string, ids []string) error {
+func (this *Lib) MigrateDeviceManager(semanticSource bool, listResource string, resource string, ids []string) error {
+	sourceUrl := this.sourceConfig.DeviceManagerUrl
+	if semanticSource {
+		sourceUrl = this.sourceConfig.SourceSemanticUrl
+	}
+
+	return this.MigrateFromSourceToTarget(
+		sourceUrl,
+		this.targetConfig.DeviceManagerUrl,
+		listResource,
+		resource,
+		ids)
+}
+
+func (this *Lib) MigrateFromSourceToTarget(sourceUrl string, targetUrl string, listResource string, resource string, ids []string) error {
 	var idProducer IdProducer
 	if len(ids) > 0 {
 		idProducer = rawIdsProducer(ids)
@@ -63,14 +77,9 @@ func (this *Lib) Migrate(semanticSource bool, listResource string, resource stri
 		idProducer = permSearchIdsProducer(this.sourceConfig.SourceListUrl, listResource)
 	}
 
-	sourceUrl := this.sourceConfig.DeviceManagerUrl
-	if semanticSource {
-		sourceUrl = this.sourceConfig.SourceSemanticUrl
-	}
-
 	return this.MigrateWithIdsProducer(
 		sourceUrl,
-		this.targetConfig.DeviceManagerUrl,
+		targetUrl,
 		resource,
 		idProducer)
 }

@@ -23,5 +23,5 @@ func init() {
 }
 
 func (this *Lib) Devices(ids []string) error {
-	return this.Migrate(false, "devices", "devices", ids)
+	return this.MigrateDeviceManager(false, "devices", "devices", ids)
 }

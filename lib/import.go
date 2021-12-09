@@ -102,7 +102,13 @@ func (this *Lib) importFileWithFilter(export map[string]interface{}, filter stri
 			if err != nil {
 				return fmt.Errorf("unable to send resource to target: %w", err)
 			}
-			req, err := http.NewRequest("PUT", this.targetConfig.DeviceManagerUrl+path, b)
+
+			requesturl := this.targetConfig.DeviceManagerUrl + path
+			if strings.Contains(path, "processes") && !strings.Contains(path, "urn:infai:ses:") {
+				requesturl = this.targetConfig.ProcessModelUrl + path
+			}
+
+			req, err := http.NewRequest("PUT", requesturl, b)
 			if err != nil {
 				return fmt.Errorf("unable to send resource to target: %w", err)
 			}

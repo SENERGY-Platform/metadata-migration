@@ -25,10 +25,15 @@ acceptable commands:
 ./metadata-migration all
 ```
 
-### Migrate with Devices and Device-Groups
+### Migrate IoT Metadata (device-types, etc.)
+```
+./metadata-migration iot-metadata
+```
+
+### Migrate iot with Devices and Device-Groups
 ```
 #for device-groups the user needs to have the 'system' role to see every element
-./metadata-migration all-with-devices
+./metadata-migration iot
 ```
 
 

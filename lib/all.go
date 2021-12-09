@@ -22,13 +22,30 @@ func init() {
 	Registry.Register([]string{"all"}, func(library *Lib, args []string) error {
 		return library.All(args)
 	})
-	Registry.Register([]string{"all-with-devices"}, func(library *Lib, args []string) error {
-		return library.AllWithDevices(args)
+	Registry.Register([]string{"iot"}, func(library *Lib, args []string) error {
+		return library.Iot(args)
+	})
+	Registry.Register([]string{"iot-metadata"}, func(library *Lib, args []string) error {
+		return library.IotMetadata(args)
 	})
 }
 
-func (this *Lib) AllWithDevices([]string) (err error) {
-	err = this.All([]string{})
+func (this *Lib) All([]string) (err error) {
+	err = this.Iot([]string{})
+	if err != nil {
+		return err
+	}
+	this.VerboseLog("wait 10s for cqrs")
+	time.Sleep(10 * time.Second)
+	err = this.ProcessModels([]string{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (this *Lib) Iot([]string) (err error) {
+	err = this.IotMetadata([]string{})
 	if err != nil {
 		return err
 	}
@@ -47,7 +64,7 @@ func (this *Lib) AllWithDevices([]string) (err error) {
 	return nil
 }
 
-func (this *Lib) All([]string) (err error) {
+func (this *Lib) IotMetadata([]string) (err error) {
 	err = this.Concepts([]string{})
 	if err != nil {
 		return err
