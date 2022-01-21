@@ -13,10 +13,19 @@ ask Ingo Rößner
 some commands may accept parameters such as a list of ids
 acceptable commands:
      all
+     aspects
      characteristics
      concepts
+     device-classes
+     device-groups
      device-types
+     devices
+     functions
      help
+     import
+     iot
+     iot-metadata
+     process-models
      protocols
 ```
 

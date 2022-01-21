@@ -28,15 +28,16 @@ import (
 )
 
 type Config struct {
-	SenergyUser       string `json:"senergy_user"`
-	Password          string `json:"password"`
-	AuthClient        string `json:"auth_client"`
-	AuthClientSecret  string `json:"auth_client_secret"`
-	AuthUrl           string `json:"auth_url"`
-	DeviceManagerUrl  string `json:"device_manager_url"`
-	SourceListUrl     string `json:"source_list_url"`
-	SourceSemanticUrl string `json:"source_semantic_url"`
-	ProcessModelUrl   string `json:"process_model_url"`
+	SenergyUser          string `json:"senergy_user"`
+	Password             string `json:"password"`
+	AuthClient           string `json:"auth_client"`
+	AuthClientSecret     string `json:"auth_client_secret"`
+	AuthUrl              string `json:"auth_url"`
+	DeviceManagerUrl     string `json:"device_manager_url"`
+	SourceListUrl        string `json:"source_list_url"`
+	SourceSemanticUrl    string `json:"source_semantic_url"`
+	ProcessModelUrl      string `json:"process_model_url"`
+	ProcessDeploymentUrl string `json:"process_deployment_url"`
 }
 
 //loads config from json in location and used environment variables (e.g ZookeeperUrl --> ZOOKEEPER_URL)

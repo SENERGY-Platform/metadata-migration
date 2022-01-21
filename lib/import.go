@@ -104,7 +104,9 @@ func (this *Lib) importFileWithFilter(export map[string]interface{}, filter stri
 			}
 
 			requesturl := this.targetConfig.DeviceManagerUrl + path
-			if strings.Contains(path, "processes") && !strings.Contains(path, "urn:infai:ses:") {
+			if strings.Contains(path, "deployments") && !strings.Contains(path, "urn:infai:ses:") {
+				requesturl = this.targetConfig.ProcessDeploymentUrl + path
+			} else if strings.Contains(path, "processes") && !strings.Contains(path, "urn:infai:ses:") {
 				requesturl = this.targetConfig.ProcessModelUrl + path
 			}
 
