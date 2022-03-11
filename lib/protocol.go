@@ -23,5 +23,5 @@ func init() {
 }
 
 func (this *Lib) Protocols(ids []string) error {
-	return this.MigrateDeviceManager(false, "protocols", "protocols", ids)
+	return this.MigrateDeviceManager("protocols", "protocols", ids)
 }

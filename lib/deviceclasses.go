@@ -16,11 +16,6 @@
 
 package lib
 
-import (
-	"encoding/json"
-	"io"
-)
-
 func init() {
 	Registry.Register([]string{"device-classes"}, func(library *Lib, args []string) error {
 		return library.DeviceClasses(args)
@@ -28,27 +23,5 @@ func init() {
 }
 
 func (this *Lib) DeviceClasses(ids []string) error {
-	var idProducer IdProducer
-	if len(ids) > 0 {
-		idProducer = rawIdsProducer(ids)
-	} else {
-		idProducer = func(token string) (ids chan string) {
-			return listResourceIds(token, this.sourceConfig.SourceSemanticUrl, func(limit int, offset int) string {
-				//semantic /device-classes does not use limit offset
-				if offset == 0 {
-					return "/device-classes"
-				} else {
-					return ""
-				}
-			}, func(reader io.Reader) (result []IdWrapper, err error) {
-				err = json.NewDecoder(reader).Decode(&result)
-				return
-			})
-		}
-	}
-	return this.MigrateWithIdsProducer(
-		this.sourceConfig.DeviceManagerUrl,
-		this.targetConfig.DeviceManagerUrl,
-		"device-classes",
-		idProducer)
+	return this.MigrateDeviceManager("device-classes", "device-classes", ids)
 }

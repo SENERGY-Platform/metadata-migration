@@ -55,14 +55,9 @@ func (this *Lib) Run(args []string) (err error) {
 	return cmd(this, rest)
 }
 
-func (this *Lib) MigrateDeviceManager(semanticSource bool, listResource string, resource string, ids []string) error {
-	sourceUrl := this.sourceConfig.DeviceManagerUrl
-	if semanticSource {
-		sourceUrl = this.sourceConfig.SourceSemanticUrl
-	}
-
+func (this *Lib) MigrateDeviceManager(listResource string, resource string, ids []string) error {
 	return this.MigrateFromSourceToTarget(
-		sourceUrl,
+		this.sourceConfig.DeviceManagerUrl,
 		this.targetConfig.DeviceManagerUrl,
 		listResource,
 		resource,

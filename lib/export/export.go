@@ -39,6 +39,9 @@ func Target(location string, ctx context.Context, wg *sync.WaitGroup) (conf conf
 	}()
 	conf.AuthUrl = auth(ctx, wg)
 	conf.DeviceManagerUrl = deviceManager(export, ctx, wg)
+	skipUrl := skip(ctx, wg)
+	conf.ProcessDeploymentUrl = skipUrl
+	conf.ProcessModelUrl = skipUrl
 	return conf, nil
 }
 
@@ -49,6 +52,19 @@ func deviceManager(export Export, ctx context.Context, wg *sync.WaitGroup) strin
 			log.Fatal(err)
 		}
 		export.Add(request.URL.Path, temp)
+	}))
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		<-ctx.Done()
+		server.Close()
+	}()
+	return server.URL
+}
+
+func skip(ctx context.Context, wg *sync.WaitGroup) string {
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		log.Println("export not supported for this resource; skip", request.URL.Path)
 	}))
 	wg.Add(1)
 	go func() {

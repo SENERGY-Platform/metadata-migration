@@ -16,12 +16,6 @@
 
 package lib
 
-import (
-	"encoding/json"
-	"io"
-	"strconv"
-)
-
 func init() {
 	Registry.Register([]string{"functions"}, func(library *Lib, args []string) error {
 		return library.Functions(args)
@@ -33,23 +27,5 @@ type FunctionsIdListResult struct {
 }
 
 func (this *Lib) Functions(ids []string) error {
-	var idProducer IdProducer
-	if len(ids) > 0 {
-		idProducer = rawIdsProducer(ids)
-	} else {
-		idProducer = func(token string) (ids chan string) {
-			return listResourceIds(token, this.sourceConfig.SourceSemanticUrl, func(limit int, offset int) string {
-				return "/functions?limit" + strconv.Itoa(limit) + "&offset=" + strconv.Itoa(offset)
-			}, func(reader io.Reader) (result []IdWrapper, err error) {
-				temp := FunctionsIdListResult{}
-				err = json.NewDecoder(reader).Decode(&temp)
-				return temp.Functions, err
-			})
-		}
-	}
-	return this.MigrateWithIdsProducer(
-		this.sourceConfig.DeviceManagerUrl,
-		this.targetConfig.DeviceManagerUrl,
-		"functions",
-		idProducer)
+	return this.MigrateDeviceManager("functions", "functions", ids)
 }

@@ -35,7 +35,6 @@ type Config struct {
 	AuthUrl              string `json:"auth_url"`
 	DeviceManagerUrl     string `json:"device_manager_url"`
 	SourceListUrl        string `json:"source_list_url"`
-	SourceSemanticUrl    string `json:"source_semantic_url"`
 	ProcessModelUrl      string `json:"process_model_url"`
 	ProcessDeploymentUrl string `json:"process_deployment_url"`
 }
