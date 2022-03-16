@@ -23,7 +23,6 @@ import (
 	"github.com/SENERGY-Platform/metadata-migration/lib/security"
 	"log"
 	"net/http"
-	"net/url"
 	"runtime/debug"
 	"strconv"
 )
@@ -71,7 +70,7 @@ func (this *Lib) Characteristics(ids []string) error {
 		if err != nil {
 			return err
 		}
-		err, code := setResource(targetToken.JwtToken(), this.targetConfig.DeviceManagerUrl+"/concepts/"+url.PathEscape(id.Concept)+"/characteristics", id.Characteristic, transformed)
+		err, code := setResource(targetToken.JwtToken(), this.targetConfig.DeviceManagerUrl+"/characteristics", id.Characteristic, transformed)
 		if err != nil {
 			this.VerboseLog(code, err)
 			return err
