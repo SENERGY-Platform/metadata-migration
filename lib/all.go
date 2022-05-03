@@ -65,13 +65,13 @@ func (this *Lib) Iot([]string) (err error) {
 }
 
 func (this *Lib) IotMetadata([]string) (err error) {
-	err = this.Concepts([]string{})
+	err = this.Characteristics([]string{})
 	if err != nil {
 		return err
 	}
 	this.VerboseLog("wait 10s for cqrs")
 	time.Sleep(10 * time.Second)
-	err = this.Characteristics([]string{})
+	err = this.Concepts([]string{})
 	if err != nil {
 		return err
 	}
