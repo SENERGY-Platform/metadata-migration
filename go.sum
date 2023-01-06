@@ -1,0 +1,4 @@
+github.com/SENERGY-Platform/models/go v0.0.0-20230105115534-8edcf0271764 h1:myrBDPxjD0l1QUwYbqTcDqiIOCMaPLMHxkxpspYtEck=
+github.com/SENERGY-Platform/models/go v0.0.0-20230105115534-8edcf0271764/go.mod h1:GqfI+440B0Yz7NshAxm4PgVwRGcNqvbxddoB+xUa6HQ=
+github.com/lib/pq v1.10.7 h1:p7ZhMD+KsSRozJr34udlUrhboJwWAgCg34+/ZZNvZZw=
+github.com/lib/pq v1.10.7/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=

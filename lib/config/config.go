@@ -37,9 +37,14 @@ type Config struct {
 	SourceListUrl        string `json:"source_list_url"`
 	ProcessModelUrl      string `json:"process_model_url"`
 	ProcessDeploymentUrl string `json:"process_deployment_url"`
+	PostgresHost         string `json:"postgres_host"`
+	PostgresPort         int    `json:"postgres_port"`
+	PostgresUser         string `json:"postgres_user"`
+	PostgresPw           string `json:"postgres_pw"`
+	PostgresDb           string `json:"postgres_db"`
 }
 
-//loads config from json in location and used environment variables (e.g ZookeeperUrl --> ZOOKEEPER_URL)
+// loads config from json in location and used environment variables (e.g ZookeeperUrl --> ZOOKEEPER_URL)
 func Load(location string) (config Config, err error) {
 	file, error := os.Open(location)
 	if error != nil {

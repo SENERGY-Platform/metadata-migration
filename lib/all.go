@@ -61,6 +61,10 @@ func (this *Lib) Iot([]string) (err error) {
 	if err != nil {
 		return err
 	}
+	err = this.DeviceData([]string{})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
