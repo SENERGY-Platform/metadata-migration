@@ -42,6 +42,7 @@ type Config struct {
 	PostgresUser         string `json:"postgres_user"`
 	PostgresPw           string `json:"postgres_pw"`
 	PostgresDb           string `json:"postgres_db"`
+	DashboardUrl         string `json:"dashboard_url"`
 }
 
 // loads config from json in location and used environment variables (e.g ZookeeperUrl --> ZOOKEEPER_URL)

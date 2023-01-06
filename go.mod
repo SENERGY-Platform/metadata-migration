@@ -1,6 +1,6 @@
 module github.com/SENERGY-Platform/metadata-migration
 
-go 1.16
+go 1.19
 
 require (
 	github.com/SENERGY-Platform/models/go v0.0.0-20230105115534-8edcf0271764
