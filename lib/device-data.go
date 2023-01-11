@@ -58,6 +58,10 @@ func (this *Lib) DeviceData(ids []string) error {
 	log.Println("Connecting to source PSQL...", sourcePsqlconn)
 	// open database
 	sourceDb, err := sql.Open("postgres", sourcePsqlconn)
+	if err != nil {
+		return err
+	}
+	defer sourceDb.Close()
 
 	targetPsqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", this.targetConfig.PostgresHost,
 		this.targetConfig.PostgresPort, this.targetConfig.PostgresUser, this.targetConfig.PostgresPw, this.targetConfig.PostgresDb)
@@ -67,10 +71,7 @@ func (this *Lib) DeviceData(ids []string) error {
 	if err != nil {
 		return err
 	}
-	err = targetDb.Close() // This was just a config check
-	if err != nil {
-		return err
-	}
+	defer targetDb.Close()
 
 	sourcePsql := "psql " + fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=disable",
 		this.sourceConfig.PostgresUser, this.sourceConfig.PostgresPw, this.sourceConfig.PostgresHost, this.sourceConfig.PostgresPort, this.sourceConfig.PostgresDb)
@@ -95,6 +96,18 @@ func (this *Lib) DeviceData(ids []string) error {
 				return err
 			}
 			this.VerboseLog(string(table))
+			rows, err := targetDb.Query("SELECT * FROM \"" + string(table) + "\" LIMIT 1")
+			if err != nil {
+				return err
+			}
+			if rows.Next() {
+				this.VerboseLog("Skipping table " + string(table) + ": Not empty. If you want to copy this data, truncate this table first!")
+				continue
+			}
+			err = rows.Close()
+			if err != nil {
+				return err
+			}
 			tableS := "\\\"" + string(table) + "\\\""
 			cmd := sourcePsql + " -c \"\\COPY (SELECT * FROM " + tableS + ") TO stdout DELIMITER ',' CSV\" | " + targetPsql + " -c \"\\COPY " + tableS + " FROM stdin CSV\""
 			ex := exec.Command("bash", "-c", cmd)
