@@ -84,7 +84,7 @@ type IdWrapper struct {
 
 func listResourceIdsFromPermSearch(token string, endpoint string, resource string) (ids chan string) {
 	return listResourceIds(token, endpoint, func(limit int, offset int) string {
-		return "/jwt/list/" + resource + "/r/" + strconv.Itoa(limit) + "/" + strconv.Itoa(offset) + "/name/asc"
+		return "/v3/resources/" + url.PathEscape(resource) + "?limit=" + strconv.Itoa(limit) + "&offset=" + strconv.Itoa(offset) + "&sort=name.asc"
 	}, func(reader io.Reader) (result []IdWrapper, err error) {
 		err = json.NewDecoder(reader).Decode(&result)
 		return
